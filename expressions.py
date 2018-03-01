@@ -16,7 +16,7 @@ class Node:
         right = str(self.right)                         # 右子树转字符串
         if self.ch in '*/' and self.left.ch in '+-':
             left = '(' + left + ')'                     # 左子树加括号
-        if self.ch == '/' or self.ch in '*-' and self.right.ch in '+-':
+        if self.ch == '/' and self.right.ch in '+-*/' or self.ch in '*-' and self.right.ch in '+-':
             right = '(' + right + ')'                   # 右子树加括号
         return left + ' ' + self.ch + ' ' + right       # 用根结点的运算符相连
 
