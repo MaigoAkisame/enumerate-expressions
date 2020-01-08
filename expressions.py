@@ -74,8 +74,9 @@ def smart4(left, right):
     # 除法：两个孩子都不能是除号
     if left.ch != '/' and right.ch != '/':
         if left.polar == 0 or right.polar == 0:
-            yield Node('/', left, right, left.polar + right.polar)  # 无极性 * 无极性 = 无极性
-                                                                    # 有极性 * 无极性 = 有极性者的极性
+            yield Node('/', left, right, left.polar + right.polar)  # 无极性 / 无极性 = 无极性
+                                                                    # 有极性 / 无极性 = 有极性者的极性
+                                                                    # 无极性 / 有极性 = 有极性者的极性
             yield Node('/', right, left, left.polar + right.polar)  # 同上
         else:
             if left.polar > 0:
