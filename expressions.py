@@ -46,10 +46,11 @@ def smart4(left, right):
     # 加法：两个孩子都不能是减号；左孩子还不能是加号；
     #       若右孩子是加号，则左孩子和右孩子的左孩子要满足单调性
     if left.ch not in '+-' and right.ch != '-' and (right.ch != '+' or left.id < right.left.id):
-        polar = (0 if left.polar == 0 and right.polar == 0 else     # 无极性 + 无极性 = 无极性
-                 1 if left.polar == 0 or right.polar == 0 else      # 有极性 + 无极性 = 正极性
-                 right.polar)                                       # 有极性 + 有极性 = 右子树极性
-        yield Node('+', left, right, polar)
+        if left.polar == 0 or right.polar == 0:
+            yield Node('+', left, right, left.polar + right.polar)  # 无极性 + 无极性 = 无极性
+                                                                    # 有极性 + 无极性 = 有极性者的极性
+        else:
+            yield Node('+', left, right, right.polar)               # 有极性 + 有极性 = 右子树极性
     # 减法：两个孩子都不能是减号
     if left.ch != '-' and right.ch != '-':
         if left.polar == 0 and right.polar == 0:                    # 无极性 - 无极性：
@@ -57,11 +58,11 @@ def smart4(left, right):
             yield Node('-', right, left, -1)                        # 反过来减是负极性
         else:
             if left.polar == 0:
-                yield Node('-', right, left, -1)                    # 有极性 - 无极性 = 负极性
+                yield Node('-', right, left, right.polar)           # 有极性 - 无极性 = 有极性者的极性
                                                                     # （无极性 - 有极性 = 舍弃）
                                                                     # （有极性 - 有极性 = 舍弃）
             if right.polar == 0:
-                yield Node('-', left, right, -1)                    # 同上
+                yield Node('-', left, right, left.polar)            # 同上
     # 乘法：两个孩子都不能是除号；左孩子还不能是乘号；
     #       若右孩子是乘号，则左孩子和右孩子的左孩子要满足单调性
     if left.ch not in '*/' and right.ch != '/' and (right.ch != '*' or left.id < right.left.id):
@@ -96,7 +97,7 @@ def enum(n, actions):
                 for node in actions(trees[i], trees[j]):            # 枚举运算符
                     node.id = trees[-1].id + 1                      # 为新结点赋予 id
                     new_trees = [trees[k] for k in range(len(trees)) if k != i and k != j] + [node]
-                                                                    # 从集合中去掉两棵子树，并加入运算结果
+                                                                    # 从列表中去掉两棵子树，并加入运算结果
                     new_minj = j - 1 if actions in [smart2, smart4] else 1
                                                                     # 若 actions 函数去重，则此处也避免「独立运算顺序不唯一」造成的重复
                     for expression in DFS(new_trees, new_minj):     # 递归下去
@@ -113,7 +114,8 @@ n = int(sys.argv[1])
 
 # 给变量赋予一些随机数，用于统计不等价算式有多少个
 from fractions import Fraction
-a = Fraction(31415); b = Fraction(92653); c = Fraction(58979); d = Fraction(32384); e = Fraction(62643); f = Fraction(38327); g = Fraction(95028); h = Fraction(84197)
+a = Fraction(3141592); b = Fraction(6535897); c = Fraction(9323846); d = Fraction(2643383)
+e = Fraction(2795028); f = Fraction(8419716); g = Fraction(9399375); h = Fraction(1058209)
 
 # 仅考虑加法与乘法
 print 'Expressions with only + and *:'
