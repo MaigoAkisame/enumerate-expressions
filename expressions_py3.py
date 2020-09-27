@@ -185,6 +185,6 @@ if __name__ == "__main__":
     from doctest import testmod
     testmod()
     # 输入变量个数
-    n = int(input("输入变量个数: "))
+    n = int(input("Input the number of variables: "))
     # 主程序由此开始
     main(n)
